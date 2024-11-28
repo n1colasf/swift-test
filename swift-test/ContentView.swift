@@ -1,23 +1,24 @@
-//
-//  ContentView.swift
-//  swift-test
-//
-//  Created by Nicolas Fernandez on 11/10/24.
-//
-
 import SwiftUI
 import SwiftData
 
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var items: [Item]
+    @State private var newNote: String = ""
 
     var body: some View {
         NavigationSplitView {
             List {
                 ForEach(items) { item in
                     NavigationLink {
-                        Text("Item at \(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))")
+                        VStack {
+                            Text("Item at \(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))")
+                            TextEditor(text: Binding(
+                                get: { item.note },
+                                set: { item.note = $0 }
+                            ))
+                            .padding()
+                        }
                     } label: {
                         Text(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))
                     }
@@ -34,6 +35,15 @@ struct ContentView: View {
                     }
                 }
             }
+            VStack {
+                TextField("Enter note", text: $newNote)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .padding()
+                Button(action: addItem) {
+                    Text("Add Note")
+                }
+                .padding()
+            }
         } detail: {
             Text("Select an item")
         }
@@ -41,8 +51,9 @@ struct ContentView: View {
 
     private func addItem() {
         withAnimation {
-            let newItem = Item(timestamp: Date())
+            let newItem = Item(timestamp: Date(), note: newNote)
             modelContext.insert(newItem)
+            newNote = ""
         }
     }
 

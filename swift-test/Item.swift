@@ -1,18 +1,13 @@
-//
-//  Item.swift
-//  swift-test
-//
-//  Created by Nicolas Fernandez on 11/10/24.
-//
-
 import Foundation
 import SwiftData
 
 @Model
 final class Item {
     var timestamp: Date
+    var note: String
     
-    init(timestamp: Date) {
+    init(timestamp: Date, note: String = "") {
         self.timestamp = timestamp
+        self.note = note
     }
 }
